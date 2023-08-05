@@ -1,14 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-
+import { NgForm } from '@angular/forms';
+import { ActivatedRoute, Route } from '@angular/router';
 @Component({
   selector: 'task-list',
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.css'],
 })
 export class TaskListComponent implements OnInit {
-  constructor() {}
+  constructor(private route: ActivatedRoute) {}
 
-  ngOnInit(): void {}
+  newTaskTitle: string = '';
+  date: Date = new Date();
+
+  ngOnInit(): void {
+    this.date = new Date(this.route.snapshot.params['date']);
+    console.log(this.date);
+  }
 
   tasks: Task[] = [
     new Task('Task1'),
@@ -17,8 +24,10 @@ export class TaskListComponent implements OnInit {
     new Task('Task4'),
   ];
 
-  add(newTask: string) {
-    this.tasks.push(new Task(newTask));
+  add(taskNgForm: NgForm) {
+    if (taskNgForm.touched == false) return;
+    this.tasks.push(new Task(this.newTaskTitle));
+    taskNgForm.reset({ date: this.date });
   }
 
   removeTask(existingTask: Task) {
