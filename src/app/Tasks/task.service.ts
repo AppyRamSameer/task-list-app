@@ -1,29 +1,33 @@
 import { Injectable } from '@angular/core';
 import { newTaskObj } from './new-task.dto';
 import { TaskItem } from './task-item.dto';
+import { Observable, BehaviorSubject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root',
-})
+// @Injectable({
+//   providedIn: 'root',
+// })
+
 export class TaskService {
   constructor() {}
 
-  private tasks: TaskItem[] = [
+  private tasks = new BehaviorSubject([
     new TaskItem('Task1'),
     new TaskItem('Task2'),
     new TaskItem('Task3'),
     new TaskItem('Task4'),
-  ];
+  ]);
 
-  getAllTasks(): TaskItem[] {
+  getAllTasks(): Observable<TaskItem[]> {
     return this.tasks;
   }
 
   addTaskItem(newTask: newTaskObj) {
-    this.tasks.push(new TaskItem(newTask.title));
+    var updatedTasks = this.tasks.value.concat(new TaskItem(newTask.title));
+    this.tasks.next(updatedTasks);
   }
 
   removeTask(existingTask: TaskItem) {
-    this.tasks = this.tasks.filter((task) => task != existingTask);
+    var updatedTasks = this.tasks.value.filter((task) => task != existingTask);
+    this.tasks.next(updatedTasks);
   }
 }
